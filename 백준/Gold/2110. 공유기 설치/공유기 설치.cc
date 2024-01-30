@@ -30,14 +30,14 @@ int main()
     sort(arr, arr+n);
     
     int l = 1;
-    int r = 1e9;
+    int r = 1e9+1;
     
-    while(l <= r){
+    while(l + 1 < r){
         int mid = (l+r) / 2;
-        if(solve(mid)) l = mid + 1;
-        else r = mid - 1;
+        if(solve(mid)) l = mid;
+        else r = mid;
     }
     
-    cout << r;
+    cout << l;
     return 0;
 }
