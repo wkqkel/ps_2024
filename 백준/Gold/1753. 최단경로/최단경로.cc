@@ -1,23 +1,22 @@
 #include <iostream>
-#include <vector>
 #include <queue>
+#include <vector>
 
 using namespace std;
 
-const int MX = 20002;
-
 int v, e, k;
-vector<pair<int, int>> vec[MX];
-int dist[MX];
-bool ch[MX];
+bool ch[20020];
+int dist[20020];
 
-void get_dist(int s){
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
+vector<pair<int, int>> vec[20020];
+
+void get_dist(int st){
+    priority_queue<pair<int,int>, vector<pair<int,int>>,greater<pair<int,int>>> pq;
     
-    for(int i = 0; i < MX; i++) dist[i] = 1e9;
+    for(int i =0; i < 20020; i++) dist[i] = 2e9;
     
-    dist[s] = 0;
-    pq.push({0,s});
+    pq.push({0,st});
+    dist[st] = 0;
     
     while(!pq.empty()){
         int cur = pq.top().second;
@@ -27,35 +26,33 @@ void get_dist(int s){
         if(ch[cur]) continue;
         ch[cur] = true;
         
-        for(int i = 0; i < vec[cur].size(); i++){
+        for(int i = 0; i < vec[cur].size();i++){
             int nxt = vec[cur][i].first;
             int nd = d + vec[cur][i].second;
             
-            if(dist[nxt] > nd) {
+            if(nd < dist[nxt]){
                 dist[nxt] = nd;
-                pq.push({nd, nxt});
+                pq.push({nd,nxt});
             }
         }
     }
 }
 
-int main()
-{
+int main(){
     cin >> v >> e >> k;
     
     for(int i = 0; i < e; i++){
         int a, b, c;
         cin >> a >> b >> c;
         vec[a].push_back({b,c});
-        // vec[b].push_back({a,c});
     }
     
     get_dist(k);
     
-    for(int i = 1; i <= v; i++){
-        int d = dist[i];
-        if(d == 1e9) cout << "INF" << '\n';
-        else cout << d << '\n';
+    for(int i = 1; i <=v; i++){
+        if(dist[i] == 2e9) cout << "INF\n";
+        else cout << dist[i] << '\n';
     }
+    
     return 0;
 }
