@@ -22,14 +22,12 @@ int solution(int bridge, int weight, vector<int> trucks) {
             int w = q.front().first;
             int prev = q.front().second;
             if(cur - prev < bridge) break;
-            // cout << cur << " " << w << " " << q.size()<< '\n';
             q.pop();
             sum -= w;
         }
         
-        if(sum + trucks[idx] > weight ||trucks.size() <= idx  ) continue; 
+        if(sum + trucks[idx] > weight || trucks.size() <= idx) continue; 
     
-        // cout << cur << " " << trucks[idx] << "\n";
         q.push({trucks[idx], cur});
         sum += trucks[idx];
         idx++;
