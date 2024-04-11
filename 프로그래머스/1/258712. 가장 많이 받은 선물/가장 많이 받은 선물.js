@@ -4,7 +4,6 @@ function solution(friends, gifts) {
     const [n, m] = [friends.length, gifts.length];
 
     const 선물기록 = Array.from({length: n}, ()=> Array(n).fill(0));
-   
     for(let i = 0; i < m; i++){
        const [sender, receiver] = gifts[i].split(' ');
        const from = name_idx_map[sender];
@@ -23,23 +22,12 @@ function solution(friends, gifts) {
     
     const 다음달 = Array(n).fill(0);
     for(let i = 0; i < n; i++){
-        for(let j = i+1; j < n; j++){
+        for(let j = 0; j < n; j++){
              if(선물기록[i][j] > 선물기록[j][i]) {
                  다음달[i] = 다음달[i] + 1;
-             }  
-             else if (선물기록[i][j] < 선물기록[j][i]) {
-                 다음달[j] = 다음달[j] + 1;
-                   
-             }
-             else if(선물기록[i][j] == 선물기록[j][i]){
-                 if(선물지수[i] > 선물지수[j]) {
+             }      
+             else if(선물기록[i][j] == 선물기록[j][i] && 선물지수[i] > 선물지수[j]){
                     다음달[i] = 다음달[i] + 1; 
-                    
-                 } 
-                 if(선물지수[i] < 선물지수[j]) {
-                    다음달[j] = 다음달[j] + 1; 
-                
-                 } 
              }
         }
     }
