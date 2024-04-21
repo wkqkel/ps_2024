@@ -1,7 +1,3 @@
-function sort(a,b){
-  
-}
-
 function solution(data, col, row_begin, row_end) {
    return data
        .sort((a,b)=> {
