@@ -1,5 +1,3 @@
-
-
 function getTotal(어피치, 라이언){
     let 어피치점수 = 0;
     let 라이언점수 = 0;
@@ -14,6 +12,9 @@ function getTotal(어피치, 라이언){
     return 라이언점수 - 어피치점수;
 }
 
+function comparator(a,b){
+   return [...b].reverse().join("") - [...a].reverse().join("")
+}
 
 function solution(n,어피치) {
     const 라이언 = new Array(11).fill(0);
@@ -48,6 +49,6 @@ function solution(n,어피치) {
     if(res.length == 0){
         return [-1]
     } else {
-        return res.sort((b,a)=> [...a].reverse().join("") - [...b].reverse().join("") )[0]
+        return res.sort(comparator)[0]
     }
 }
