@@ -49,7 +49,7 @@ function solution(board) {
     if(isWin(board,'O') == 1 && xCnt >= oCnt) 
         return 0; 
     // x가 이겼는데 계속 두는 상황
-    if(isWin(board,'X') == 1 && oCnt > 3)
+    if(isWin(board,'X') == 1 && xCnt < oCnt && dCnt)
         return 0;
     
     return 1;
