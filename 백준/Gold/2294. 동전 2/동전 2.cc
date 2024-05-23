@@ -2,26 +2,27 @@
 
 using namespace std;
 
-int n, k;
-int arr[102];
-int dp[10002];
-int main()
-{
+const int MX = 100002;
+int coins[102];
+int dp[MX];
+
+int main(){
+    int n, k;
     cin >> n >> k;
     
-    for(int i = 0; i < n; i++) cin >> arr[i];
-    
-    for(int i = 0; i <= k; i++) dp[i] = 1e9;
-    
+    for(int i = 0; i < n; i++){
+        cin >> coins[i];
+    }
+    fill(dp, dp+MX, 1e9);
     dp[0] = 0;
     for(int i = 0; i < n; i++){
-        for(int j = arr[i]; j <= k; j++){
-            dp[j] = min(dp[j], dp[j-arr[i]]+1);
+        int coin = coins[i];
+        for(int j = coin; j <= 10000; j++){
+            dp[j] = min(dp[j-coin] + 1, dp[j]);
         }
     }
-    
     if(dp[k] == 1e9) cout << -1;
     else cout << dp[k];
-    
+
     return 0;
 }
