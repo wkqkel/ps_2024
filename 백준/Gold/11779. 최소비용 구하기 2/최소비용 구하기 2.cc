@@ -32,7 +32,7 @@ int main()
     }
     
     cin >> s >> e;
-     priority_queue<P, vector<P>, greater<P>> q;
+    priority_queue<P, vector<P>, greater<P>> q;
     
     for(int i = 0; i < MX; i++){
         dist[i] = 1e9;
@@ -53,7 +53,7 @@ int main()
         for(int i = 0; i < vec[cur].size(); i++){
             nxt = vec[cur][i].first;
             nd = vec[cur][i].second + d;
-            
+            // if(dist[nxt] == nd) pre[nxt] = cur;
             if(dist[nxt] > nd){
                 q.push({nd, nxt});
                 dist[nxt] = nd;
