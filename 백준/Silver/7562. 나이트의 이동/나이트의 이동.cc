@@ -1,67 +1,58 @@
 #include <iostream>
 #include <queue>
+
 using namespace std;
 
-int n;
-int st[2];
-int en[2];
+int t, n;
+pair<int, int> st, en;
 
 const int MX = 302;
-bool visited[MX][MX];
-queue<pair<int,int>> q;
+bool ch[MX][MX];
 
-int dx[8] = {1,2,2,1,-1,-2,-2,-1};
-int dy[8] = {2,1,-1,-2,-2,-1,1,2};
+int dx[8] = {-2,-1,1,2,2,1,-1,-2};
+int dy[8] = {1,2,2,1,-1,-2,-2,-1};
 
-int bfs(){
-    q.push({st[0],st[1]});
-    visited[st[0]][st[1]] = true;
-
-    int d = 0;
+void bfs(){
+    queue<pair<int,int>> q;
+    q.push(st);
+    ch[st.first][st.second] = 1;
+    
+    int cnt = 0;
     while(!q.empty()){
         int sz = q.size();
-     
         while(sz--){
             int x = q.front().first;
             int y = q.front().second;
             q.pop();
+            if(x == en.first && y == en.second) cout << cnt << "\n";
             
-            if(en[0] == x && en[1] == y) {
-                return d;
-            }
             for(int i = 0; i < 8; i++){
-                int nx = dx[i] + x;
-                int ny = dy[i] + y;
+                int nx = x + dx[i];
+                int ny = y + dy[i];
                 if(nx < 0 || nx >= n || ny < 0 || ny >= n) continue;
-                if(visited[nx][ny]) continue;
-               
+                if(ch[nx][ny]) continue;
                 q.push({nx,ny});
-                visited[nx][ny] = true;
+                ch[nx][ny] = 1;
             }
         }
-        d++;
+        cnt++;
     }
-    return 0;
-}
-
-void solution(){
-    for(int i = 0; i < MX;i++){
-        for(int j = 0; j < MX; j++){
-            visited[i][j] = false;
-        }
-    }
-    q = {};
-    cin >> n >> st[0] >> st[1] >> en[0] >> en[1];
-    cout << bfs() << '\n';
 }
 
 int main()
 {
-    int t;
     cin >> t;
-    while(t--){
-        solution();
+    while(t--) {
+        cin >> n;
+        cin >> st.first >> st.second;
+        cin >> en.first >> en.second;
+        
+        for(int i = 0; i < n; i++){
+            fill(ch[i], ch[i]+MX, 0);
+        }
+        
+        bfs();
     }
-    
+
     return 0;
 }
