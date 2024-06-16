@@ -1,6 +1,5 @@
 #include <iostream>
 #include <algorithm>
-#include <map>
 
 using namespace std;
 
@@ -10,21 +9,19 @@ bool ch[20];
 
 int val[20];
 
-map<string, bool> ch2;
-
 void recur(int cur, int s){
     if(cur == m){
-        string str = "";
         for(int i = 0; i < m; i++){
-            str += to_string(val[arr[i]]) + " ";
+            cout << val[arr[i]] << " ";
         }
-        if(ch2[str]) return;
-        ch2[str] = 1;
-        cout << str << "\n";
+        cout << "\n";
         return;
     }
+    int tmp = 0;
     for(int i = s; i < n; i++){
+        if(tmp == val[i]) continue;
         arr[cur] = i;
+        tmp = val[i];
         recur(cur + 1, i+1);
     }
 }
