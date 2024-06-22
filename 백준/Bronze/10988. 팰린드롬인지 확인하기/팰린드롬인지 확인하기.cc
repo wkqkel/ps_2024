@@ -2,16 +2,16 @@
 
 using namespace std;
 
-bool isPalid(string s, int a, int b){
-    if(s[a] != s[b]) return false;
-    if(a >= b) return true;
-    return isPalid(s, a+1, b-1);
+bool is_palidrome(string& str, int s, int e){
+    if(s >= e) return true;
+    if(str[s] != str[e]) return false;
+    return is_palidrome(str, s+1, e-1);
 }
-
 int main()
 {
     string str;
     cin >> str;
     
-    cout << isPalid(str, 0 , str.size()-1);
+    cout << is_palidrome(str, 0, str.size() - 1);
+    return 0;
 }
