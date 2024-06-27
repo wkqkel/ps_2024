@@ -2,22 +2,22 @@
 
 using namespace std;
 
-int arr[100020];
+
 int n, m;
-int mx = -1e9;
+int ret = -1e9;
+int psum[100020];
 int main()
 {
     cin >> n >> m;
-    for(int i = 0; i < n; i++) cin >> arr[i];
-    int sum = 0;
-    
-    for(int i = 0; i < m; i++) sum += arr[i];
-    mx = sum;
-    for(int i = m; i < n; i++){
-        sum += arr[i] - arr[i - m];
-        mx = max(sum, mx);
+    for(int i = 1; i <= n; i++) {
+        int v;
+        cin >> v;
+        psum[i] = psum[i-1] + v;
     }
     
-    cout << mx;
+    for(int i = m; i <= n; i++){
+        ret = max(ret, psum[i] - psum[i-m]);
+    }
+    cout << ret;
     return 0;
 }
