@@ -5,8 +5,7 @@ using namespace std;
 
 bool cmp(string a, string b){
     if(a.size() == b.size()) {
-        if(a[0] == b[0]) return cmp(a.substr(1), b.substr(1));
-        return a[0] < b[0];
+        return a < b;
     }
    
     return a.size() <  b.size();
