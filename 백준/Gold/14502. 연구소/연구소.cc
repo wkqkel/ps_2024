@@ -1,134 +1,128 @@
 #include <iostream>
 #include <queue>
-
 using namespace std;
+
+#define P pair<int, int>
+#define X first
+#define Y second
+
 /**
-1. 아이디어
-벽을 3개 세운 뒤 안전영역의 최대 크기를 구하라
-n,m이 최대 8인 것을 보고 완전탐색 + bfs를 떠올림.
+# boj14502 연구소
 
-2. 시간복잡도
-완탐
-조합 64 * 63 * 62 / 1 * 2 * 3 = 4e4
+## 설계
+1. 벽 3개 경우의 수
+벽 3개 세우기
+완탐 최대 64^3 = 262144
 
-bfs
-V+E = 64 + 64 * 4 = 320
+2. 바이러스 퍼뜨리기 
+bfs로 2인 곳에서부터 0으로 상하좌우로 다 퍼뜨린 뒤,
+안전영역 갯수 세기
+O(V+E) = O(4NM) = O(4*64)
 
-충분
-
-3. 자료구조
-visited 방문체크
-
---
-2차원에서 완탐 3개 고르는 법을 구현하는데 오래 걸렸다..
-완탐에서 막혀서 약 1시간~1시간반정도 걸림...
-
+=> 가능
 */
-const int MX = 8;
-int board1[MX][MX];
-int board2[MX][MX];
 
 int n,m;
 
-int visited[MX][MX];
+const int MX = 12;
+int board[MX][MX];
+int board2[MX][MX];
+bool ch[MX][MX];
+bool ch2[MX][MX];
 
-int arr[102];
-int cnt = 0;
+P arr[MX];
 
 int dx[4] = {1,0,-1,0};
 int dy[4] = {0,1,0,-1};
 
-int mx = -1;
+int mx = 0;
 
-void reset(){
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-            board2[i][j] = board1[i][j];
-            visited[i][j] = false;
-        }
-    }
-}
-
-bool over_map(int nx, int ny){
-    return nx < 0 || nx >= n || ny < 0 || ny >= m;
-}
-
-
-int bfs(){
-    queue<pair<int,int>> q;
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-            if(board2[i][j] != 2) continue;
-            q.push({i,j});
-            visited[i][j] = true;
-        }
-    }
-
+void bfs(int sx, int sy){
+    queue<P> q;
+    
+    q.push({sx,sy});
+    ch2[sx][sy] = 1;
+    
     while(!q.empty()){
         int sz = q.size();
+        
         while(sz--){
-            int x = q.front().first;
-            int y = q.front().second;
-            board2[x][y] = 2;
+            int x = q.front().X;
+            int y = q.front().Y;
+            // board2[x][y] = 2;
             q.pop();
             
-            for(int i = 0; i < 4; i++){
+            for(int i = 0; i <4; i++){
                 int nx = x + dx[i];
                 int ny = y + dy[i];
                 
-                if(over_map(nx,ny)) continue;
-                if(board2[nx][ny]!=0 || visited[nx][ny]) continue;
-                
+                if(nx < 0 || nx >= n || ny < 0 || ny >= m) continue;
+                if(board2[nx][ny] != 0 || ch2[nx][ny]) continue;
                 q.push({nx,ny});
-                visited[nx][ny] = true;
+                ch2[nx][ny] = 1;
+                board2[nx][ny] = 2;
             }
         }
     }
     
-    int cnt = 0;
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-            if(board2[i][j] == 0) cnt++;
-        }
-    }
-    
-    return cnt;
+
 }
 
-void recur(int cur, int s){
+void recur(int cur){
     if(cur == 3){
-        reset();
-        
-        for(int i = 0; i < 3; i++){
-            int x = arr[i] / m;
-            int y = arr[i] % m;
-            if(board2[x][y] != 0) {
-                return;
-            };
-            board2[x][y] = 1;
+        // 초기화
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+              ch2[i][j] = 0;
+              board2[i][j] = board[i][j];
+            }
         }
-        mx = max(mx, bfs());
+        // 벽세우기
+        for(int i = 0; i < 3; i++){
+            board2[arr[i].X][arr[i].Y] = 1;
+        }
+        
+        // // 바이러스 퍼뜨리기
+        for(int i = 0; i< n; i++){
+            for(int j = 0; j< m; j++){
+                if(ch2[i][j] || board2[i][j] != 2) continue;
+                bfs(i,j);
+            }
+        }
+        
+        int cnt = 0;    
+        for(int i = 0; i< n; i++){
+            for(int j = 0; j< m; j++){
+                if(board2[i][j] == 0) cnt++;
+            }
+        }
+        
+        mx = max(cnt, mx);
         return;
     }
     
-    for(int i = s; i < n * m; i++){
-        arr[cur] = i;
-        recur(cur+1, i+1);
+    for(int i = 0; i< n; i++){
+        for(int j = 0; j< m; j++){
+            if(ch[i][j] || board[i][j] != 0) continue;
+            arr[cur] = {i,j};
+            ch[i][j] = 1;
+            recur(cur+1);
+            ch[i][j] = 0;
+        }
     }
 }
-
 
 int main()
 {
     cin >> n >> m;
-    
-   for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-            cin >> board1[i][j];
-        }   
+    for(int i = 0; i< n; i++){
+        for(int j = 0; j< m; j++){
+            cin >> board[i][j];
+        }
     }
-   
-    recur(0, 0);
+    
+    recur(0);
+
     cout << mx;
     return 0;
 }
