@@ -1,23 +1,26 @@
 #include <iostream>
-#include <algorithm>
+
 using namespace std;
 
-int arr[1001];
-int d[1001];
+
+// d[x]는 x를 1,2,3의 총합으로 나타내는 법 
+int dp[20];
 int main()
 {
-    int q;
-    cin >> q;
     
-    d[1] = 1, d[2] = 2, d[3] = 4;
-    for(int i = 4; i < 11; i++){
-        d[i] = d[i-3] + d[i-2] + d[i-1];
+    int t;
+    cin >> t;
+    dp[1] = 1;
+    dp[2] = 2;
+    dp[3] = 4;
+    while(t--){
+        int n;
+        cin >> n;
+        for(int i = 4; i <= n; i++){
+            dp[i] = dp[i-1] + dp[i-2] + dp[i-3];
+        }
+        cout << dp[n] << "\n";
     }
-    
-    while(q--){
-        int v;
-        cin >> v;
-        cout << d[v] << '\n';
-    }
+ 
     return 0;
 }
