@@ -1,22 +1,21 @@
 #include <iostream>
-#include <algorithm>
+
 using namespace std;
 
-int arr[1001];
-int d[1001];
+int d[304][3];
+int arr[304];
 int main()
 {
     int n;
     cin >> n;
-    
     for(int i = 1; i <= n; i++) cin >> arr[i];
     
-    d[1] = arr[1];
-    d[2] = arr[1] + arr[2];
-    for(int i = 3; i <= n; i++){
-        d[i] = max(d[i-2], arr[i-1] + d[i-3]) + arr[i];
+    for(int i = 1; i <= n; i++){
+          d[i][1] = max(d[i-2][1], d[i-2][2]) + arr[i];
+          d[i][2] = d[i-1][1] + arr[i];
     }
-   
-    cout << d[n];
+    
+    cout << max(d[n][1], d[n][2]);
+    
     return 0;
 }
