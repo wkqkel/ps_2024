@@ -8,6 +8,9 @@
 2. 순환
 반시계나 시계로 돈다.
 클리너를 만나면 사라짐.
+
+--
+순환시 덮어씌워지지않으려면 뒤에서부터 갱신해야하는데 이 부분에서 틀렸음.
 */
 
 using namespace std;
@@ -84,21 +87,12 @@ void rotate(){
     for(int i = n - 1; i > nxt_pos; i--){
         board[i][m-1] = board[i-1][m-1];
     }
-    for(int i = m - 1; i > 1; i--){
+    for(int i = m - 1; i > 0; i--){
         board[nxt_pos][i] = board[nxt_pos][i-1];
     }
     board[nxt_pos][1] = 0;
 }
 
-void print_board(){
-    cout << "----print board------\n";
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < m; j++){
-            cout << board[i][j] << " ";
-        }
-        cout << "\n";
-    }
-}
 int main()
 {
     cin >> n >> m >> t;
