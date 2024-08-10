@@ -77,8 +77,6 @@ class Solution {
         int[] answer = {};
         DoublePq pq = new DoublePq();
         
-      
-    
         for(String op : ops){
            StringTokenizer st = new StringTokenizer(op);
            String cmd = st.nextToken();
