@@ -42,9 +42,8 @@ class Solution {
         for(int i = 0; i < MX; i++){
             vec[i] = new ArrayList<>();
         }
-        Arrays.fill(ch, false); // 초기화
-
-        for(int i = 0; i < edge.length; i++){ // 수정된 부분
+   
+        for(int i = 0; i < edge.length; i++){ 
             int a = edge[i][0];
             int b = edge[i][1];
             vec[a].add(b);
