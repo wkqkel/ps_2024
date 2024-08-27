@@ -11,7 +11,6 @@ public class Main {
 	static int mx = 0;
 
 	public static void main(String[] args) throws Exception {
-	
 		Scanner sc = new Scanner(System.in);
 		R = sc.nextInt();
 		C = sc.nextInt();
@@ -22,8 +21,24 @@ public class Main {
 				board[i][j] = str.charAt(j);
 			}
 		}
-		dfs(0, 0, 0);
+		// dfs(0, 0, 0);
+		bit_dfs(0, 0, 0, 0);
 		System.out.println(mx + 1);
+	}
+
+	public static void bit_dfs(int x, int y, int d, int flag) {
+		int bit = 1 << (board[x][y] - 'A');
+		if ((flag & bit) != 0)
+			return;
+
+		mx = Math.max(d, mx);
+		for (int i = 0; i < 4; i++) {
+			int nx = x + dx[i];
+			int ny = y + dy[i];
+			if (nx < 0 || nx >= R || ny < 0 || ny >= C)
+				continue;
+			bit_dfs(nx, ny, d + 1, flag | bit);
+		}
 	}
 
 	public static void dfs(int x, int y, int d) {
