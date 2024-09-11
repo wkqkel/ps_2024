@@ -30,22 +30,13 @@ public class Main {
         }
 
         void move() {
-            for (int i = 0; i < s; i++) {
-                r += dr[d];
-                c += dc[d];
-
-                if (r > N) {
-                    r = 1;
-                }
-                if (r < 1) {
-                    r = N;
-                }
-                if (c > N) {
-                    c = 1;
-                }
-                if (c < 1) {
-                    c = N;
-                }
+            r = (r + dr[d] * s) % N;
+            c = (c + dc[d] * s) % N;
+            if (r < 0) {
+                r += N;
+            }
+            if (c < 0) {
+                c += N;
             }
         }
 
