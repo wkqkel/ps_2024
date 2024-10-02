@@ -1,100 +1,132 @@
-import java.io.FileInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-	static int cnt[] = new int[12];
-	static ArrayList<Integer> vec[] = new ArrayList[12];
-	static boolean tmp[] = new boolean[12];
-	static int N = 0;
-	static int all = 0;
-	static int mn = (int) 1e9;
 
-	public static void main(String[] args) throws Exception {
-		Scanner sc = new Scanner(System.in);
+	static ArrayList<Integer>[] adjList;
+	static int N, res;
+	static int[] population;
+	static boolean[] v, vertexV;
 
-		N = sc.nextInt();
+	static int BFS(int start, int size) {
 
-		for (int i = 0; i < 12; i++) {
-			vec[i] = new ArrayList<>();
-		}
-
-		for (int i = 0; i < N; i++) {
-			cnt[i] = sc.nextInt();
-			all += cnt[i];
-		}
-
-		for (int i = 0; i < N; i++) {
-			int c = sc.nextInt();
-			for (int j = 0; j < c; j++) {
-				int v = sc.nextInt() - 1;
-				vec[i].add(v);
-				vec[v].add(i);
-			}
-		}
-
-		recur(0, 0, 0);
-
-		if (mn == (int) 1e9)
-			mn = -1;
-		System.out.println(mn);
-	}
-
-	static boolean bfs(ArrayList<Integer> team) {
+		int cnt = 1;
+		int res = population[start];
 		Queue<Integer> q = new ArrayDeque<>();
-		q.clear();
-		boolean ch[] = new boolean[12];
-		q.add(team.get(0));
-		ch[team.get(0)] = true;
+		q.add(start);
+		vertexV[start] = true;
 
 		while (!q.isEmpty()) {
-			int cur = q.poll();
-			for (int nxt : vec[cur]) {
-				if (!team.contains(nxt) || ch[nxt]) {
-					continue;
-				}
-				q.add(nxt);
-				ch[nxt] = true;
+			int vertex = q.poll();
 
+			for (int idx : adjList[vertex]) {
+				if (!vertexV[idx]) {
+					vertexV[idx] = true;
+					cnt++;
+					res += population[idx];
+					q.add(idx);
+				}
 			}
 		}
 
-		for (int m : team) {
-			if (!ch[m])
-				return false;
-		}
-		return true;
+		if (cnt == size)
+			return res;
+		return -1;
 	}
 
-	static void recur(int cur, int len, int sum) {
-		if (cur == N) {
-			// 1. 한 팀에 몰리면 X
-			if (len == 0 || len == N)
-				return;
+	static int GetDiff() {
+		int start = 0;
+		int size = 0;
+		for (int i = 1; i <= N; i++) {
+			if (v[i]) {
+				start = i;
+				size++;
+				vertexV[i] = false;
+			} else
+				vertexV[i] = true;
+		}
 
-			ArrayList<Integer> team1 = new ArrayList<>();
-			ArrayList<Integer> team2 = new ArrayList<>();
+		int val1 = BFS(start, size);
+		
+		if(val1 == -1) return -1;
+		
+		start = 0; size = 0;
+		for (int i = 1; i <= N; i++) {
+			if (!v[i]) {
+				start = i;
+				size++;
+				vertexV[i] = false;
+			} else
+				vertexV[i] = true;
+		}
 
-			for (int i = 0; i < N; i++) {
-				if (tmp[i])
-					team1.add(i);
-				else
-					team2.add(i);
-			}
-			if (!bfs(team1) || !bfs(team2)) {
-				return;
-			}
-			mn = Math.min(Math.abs((all - sum) - sum), mn);
+		int val2 = BFS(start, size);
+		
+		if(val2 == -1) return -1;
+		
+		return Math.abs(val1 - val2);
+	}
+
+	static void subset(int depth, int cnt) {
+		if (depth == N) {
+			if(cnt == N || cnt == 0) return;
+			
+			int val = GetDiff();
+			if (val >= 0)
+				res = Math.min(res, val);
 
 			return;
 		}
 
-		tmp[cur] = true;
-		recur(cur + 1, len + 1, sum + cnt[cur]);
-		tmp[cur] = false;
-		recur(cur + 1, len, sum);
+		v[depth + 1] = true;
+		subset(depth + 1, cnt+1);
+
+		v[depth + 1] = false;
+		subset(depth + 1, cnt);
 	}
 
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+		StringTokenizer st = new StringTokenizer(br.readLine());
+
+		N = Integer.parseInt(st.nextToken());
+		population = new int[N + 1];
+		v = new boolean[N + 1];
+		vertexV = new boolean[N + 1];
+		adjList = new ArrayList[N + 1];
+		res = 1000;
+
+		for (int i = 1; i <= N; i++) {
+			adjList[i] = new ArrayList<Integer>();
+		}
+
+		st = new StringTokenizer(br.readLine());
+		for (int i = 1; i <= N; i++) {
+			population[i] = Integer.parseInt(st.nextToken());
+		}
+
+		for (int i = 1; i <= N; i++) {
+			st = new StringTokenizer(br.readLine());
+			int size = Integer.parseInt(st.nextToken());
+			for (int s = 0; s < size; s++) {
+				int end = Integer.parseInt(st.nextToken());
+				adjList[i].add(end);
+				adjList[end].add(i);
+			}
+		}
+
+		subset(0, 0);
+
+		if (res == 1000)
+			res = -1;
+		sb.append(res);
+		System.out.println(sb);
+	}
 }
