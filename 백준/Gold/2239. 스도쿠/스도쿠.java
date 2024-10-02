@@ -1,86 +1,103 @@
-import java.io.FileInputStream;
-
-import java.util.Scanner;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 public class Main {
-	static int arr[][] = new int[9][9];
-	static int N = 0;
-	static int empty[][] = new int[81][2];
 
-	public static void main(String[] args) throws Exception {
-		Scanner sc = new Scanner(System.in);
-
-		for (int i = 0; i < 9; i++) {
-			String v = sc.next();
-			for (int j = 0; j < 9; j++) {
-				arr[i][j] = v.charAt(j) - '0';
-				if (arr[i][j] == 0) {
-					empty[N++] = new int[] { i, j };
-				}
-			}
+	static class Point {
+		Point(int y, int x) {
+			this.y = y;
+			this.x = x;
 		}
 
-		dfs(0);
+		int y;
+		int x;
 	}
 
-	static void printMap() {
+	static int b[][] = new int[9][9];
+	static List<Point> zeros = new ArrayList<>();
+
+	static boolean rowCheck(int x, int val) {
 		for (int i = 0; i < 9; i++) {
-			for (int j = 0; j < 9; j++) {
-				System.out.print(arr[i][j]);
-			}
-			System.out.println();
-		}
-	}
-
-	static void dfs(int cur) {
-		if (cur == N) {
-			printMap();
-			System.exit(0);
-		}
-
-		for (int i = 1; i <= 9; i++) {
-			int r = empty[cur][0];
-			int c = empty[cur][1];
-
-			arr[r][c] = i;
-			if (check(r, c)) {
-				dfs(cur + 1);
-			}
-			arr[r][c] = 0;
-		}
-	}
-
-	static public boolean check(int r, int c) {
-
-		// 가로 보기
-		int cur = arr[r][c];
-		for (int i = 0; i < 9; i++) {
-			if (i == c)
-				continue;
-			if (cur == arr[r][i])
+			if (b[i][x] == val)
 				return false;
 		}
+		return true;
+	}
 
-		// 세로보기
+	static boolean colCheck(int y, int val) {
 		for (int i = 0; i < 9; i++) {
-			if (i == r)
-				continue;
-			if (cur == arr[i][c])
+			if (b[y][i] == val)
 				return false;
 		}
+		return true;
+	}
 
-		// 사각형 보기
-		int sr = (r / 3) * 3;
-		int sc = (c / 3) * 3;
-		for (int i = sr; i < sr + 3; i++) {
-			for (int j = sc; j < sc + 3; j++) {
-				if (i == r && j == c)
-					continue;
-				if (cur == arr[i][j])
+	static boolean blockCheck(int y, int x, int val) {
+		int sy = (y / 3) * 3;
+		int sx = (x / 3) * 3;
+
+		for (int r = sy; r < sy + 3; r++) {
+			for (int c = sx; c < sx + 3; c++) {
+				if(r == y && c == x) continue;
+				if(b[r][c] == val)
 					return false;
 			}
 		}
-
 		return true;
 	}
+
+	static boolean flag = false;
+	static void FillBoard(int start) {
+		
+		if(start >= zeros.size()) {
+			flag = true;
+			StringBuilder sb = new StringBuilder();
+			
+			for (int y = 0; y < 9; y++) {
+				for (int x = 0; x < 9; x++) {
+					sb.append(b[y][x]);
+				}
+				sb.append("\n");
+			}
+			System.out.println(sb);
+			return;
+		}
+		
+		int r = zeros.get(start).y;
+		int c = zeros.get(start).x;
+		
+		for (int num = 1; num <= 9; num++) {
+			
+			if (rowCheck(c, num) && colCheck(r, num) && blockCheck(r, c, num)) {
+				b[r][c] = num;
+				FillBoard(start+1);
+				if(flag) return;
+				b[r][c] = 0;
+			}
+		}
+	}
+
+	public static void main(String[] args) throws IOException {
+		// TODO Auto-generated method stub
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringBuilder sb = new StringBuilder();
+
+		// 인풋
+		for (int y = 0; y < 9; y++) {
+			StringTokenizer st = new StringTokenizer(br.readLine());
+			String str = st.nextToken();
+			for (int x = 0; x < 9; x++) {
+				b[y][x] = str.charAt(x) - '0';
+				if (b[y][x] == 0)
+					zeros.add(new Point(y, x));
+			}
+		}
+		
+		FillBoard(0);
+	}
+
 }
