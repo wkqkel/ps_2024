@@ -1,152 +1,166 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
 
-    static int par[] = new int[10];
-    static boolean ch[][] = new boolean[102][102];
-    static int board[][] = new int[102][102];
+	static int N, M;
+	static int map[][] = new int[12][12];
+	static int seq = 1;
+	static int dx[] = new int[] { 1, 0, -1, 0 };
+	static int dy[] = new int[] { 0, -1, 0, 1 };
+	static ArrayList<int[]> vec = new ArrayList<>();
 
-    static int N, M;
-    static int dx[] = new int[]{1, 0, -1, 0};
-    static int dy[] = new int[]{0, -1, 0, 1};
-    static int id = 1;
+	static int par[] = new int[12];
+	static int ret = 0;
 
-    static ArrayList<Integer[]> vec = new ArrayList<>();
+	public static void main(String[] args) throws Exception {
 
-    public static void main(String[] args) throws Exception {
-       
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+		// System.setIn(new FileInputStream("src/input.txt"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        for (int i = 0; i < N; i++) {
-            st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < M; j++) {
-                board[i][j] = Integer.parseInt(st.nextToken());
-            }
-        }
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		N = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-        // flood fill로 표시
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                if (board[i][j] == 0 || ch[i][j]) {
-                    continue;
-                }
-                dfs(i, j);
-                id++;
-            }
-        }
+		for (int i = 0; i < N; i++) {
+			st = new StringTokenizer(br.readLine());
+			for (int j = 0; j < M; j++) {
+				map[i][j] = Integer.parseInt(st.nextToken());
+			}
+		}
 
-        init();
-        for (int x = 0; x < N; x++) {
-            for (int y = 0; y < M; y++) {
-                if (board[x][y] == 0) {
-                    continue;
-                }
-                int cur = board[x][y];
-                for (int dir = 0; dir < 2; dir++) {
-                    int nx = x;
-                    int ny = y;
+		// 1. flood fill로 숫자 매기기
+		mark();
 
-                    int d = 0;
-                    while (true) {
-                        nx += dx[dir];
-                        ny += dy[dir];
-                        if (nx < 0 || nx >= N || ny < 0 || ny >= M) {
-                            break;
-                        }
+		// 2. 섬을 잇는 모든 간선(다리)만들기 O(100*10*4)
+		makeBridge();
+		// 3. 크루스칼
+		kruskal();
 
-                        int nxt = board[nx][ny];
-                        if (nxt == cur) {
-                            break;
-                        }
-                        if (nxt > 0) {
-                            if (d >= 2) {
-                                vec.add(new Integer[]{d, cur, nxt});
-                            }
-                            break;
-                        }
+		if (!isConnected()) {
+			ret = -1;
+		}
 
-                        d++;
-                    }
-                }
-            }
-        }
-//        print();
-        int ret = 0;
-        Collections.sort(vec, (o1, o2) -> o1[0] - o2[0]);
-        for (Integer[] v : vec) {
-//            System.out.println(Arrays.toString(v));
-            if (find(v[1]) != find(v[2])) {
-                ret += v[0];
-                union(v[1], v[2]);
-            }
-        }
-        int p = find(1);
-        for (int i = 2; i < id; i++) {
-            if (p != find(i)) {
-                System.out.println(-1);
-                return;
-            }
-        }
-        System.out.println(ret);
-    }
+		System.out.println(ret);
+	}
 
-    static void dfs(int x, int y) {
-        if (ch[x][y]) {
-            return;
-        }
-        ch[x][y] = true;
-        board[x][y] = id;
-        for (int i = 0; i < 4; i++) {
-            int nx = x + dx[i];
-            int ny = y + dy[i];
-            if (nx < 0 || nx >= N || ny < 0 || ny >= M) {
-                continue;
-            }
-            if (board[nx][ny] == 0) {
-                continue;
-            }
-            dfs(nx, ny);
+	static void mark() {
+		boolean ch[][] = new boolean[12][12];
 
-        }
-    }
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				if (map[i][j] == 0 || ch[i][j])
+					continue;
+				// bfs
 
-    static void init() {
-        for (int i = 0; i < 10; i++) {
-            par[i] = i;
-        }
-    }
+				Queue<int[]> q = new ArrayDeque<>();
+				q.add(new int[] { i, j });
+				ch[i][j] = true;
 
-    static int find(int a) {
-        if (a == par[a]) {
-            return a;
-        }
-        return par[a] = find(par[a]);
-    }
+				while (!q.isEmpty()) {
+					int sz = q.size();
+					while (sz-- > 0) {
+						int[] cur = q.poll();
+						int x = cur[0];
+						int y = cur[1];
+						map[x][y] = seq;
+						for (int dir = 0; dir < 4; dir++) {
+							int nx = x + dx[dir];
+							int ny = y + dy[dir];
+							if (overMap(nx, ny))
+								continue;
+							if (map[nx][ny] != 1 || ch[nx][ny])
+								continue;
+							q.add(new int[] { nx, ny });
+							ch[nx][ny] = true;
+						}
+					}
+				}
+				seq++;
+			}
+		}
+	}
 
-    static void union(int a, int b) {
-        a = find(a);
-        b = find(b);
-        if (a == b) {
-            return;
-        }
-        par[b] = a;
-    }
+	static void makeBridge() {
+		for (int i = 0; i < N; i++) {
+			for (int j = 0; j < M; j++) {
+				// 옆으로
+				int a = map[i][j];
+				if (a == 0)
+					continue;
+				// 4방향
 
-    static void print() {
-        for (int i = 0; i < N; i++) {
-            for (int j = 0; j < M; j++) {
-                System.out.print(board[i][j] + " ");
-            }
-            System.out.println();
-        }
-    }
+				for (int dir = 0; dir < 4; dir++) {
+					int nx = i;
+					int ny = j;
+					while (true) {
+						nx += dx[dir];
+						ny += dy[dir];
+						if (overMap(nx, ny))
+							break;
+						if (map[nx][ny] != 0)
+							break;
+					}
+					if (!overMap(nx, ny)) {
+						int b = map[nx][ny];
+						int c = Math.abs(i + j - (nx + ny)) - 1;
+						if (c < 2)
+							continue;
+
+						vec.add(new int[] { c, a, b });
+					}
+				}
+			}
+		}
+	}
+
+	static void kruskal() {
+		vec.sort((a, b) -> a[0] - b[0]);
+		for (int i = 1; i <= seq; i++) {
+			par[i] = i;
+		}
+
+		for (int i = 0; i < vec.size(); i++) {
+			int a = find(vec.get(i)[1]);
+			int b = find(vec.get(i)[2]);
+			int c = vec.get(i)[0];
+
+			if (a == b)
+				continue;
+
+			union(a, b);
+
+			ret += c;
+		}
+	}
+
+	private static boolean overMap(int nx, int ny) {
+		return (nx < 0 || nx >= N || ny < 0 || ny >= M);
+	}
+
+	private static int find(int a) {
+		if (par[a] == a) {
+			return a;
+		}
+		return par[a] = find(par[a]);
+	}
+
+	private static void union(int a, int b) {
+		a = find(a);
+		b = find(b);
+		if (a == b)
+			return;
+
+		par[b] = a;
+	}
+
+	private static boolean isConnected() {
+		boolean ret = true;
+		int st = find(par[1]);
+		for (int i = 1; i < seq; i++) {
+			if (find(par[i]) != st)
+				ret = false;
+		}
+		return ret;
+	}
 }
