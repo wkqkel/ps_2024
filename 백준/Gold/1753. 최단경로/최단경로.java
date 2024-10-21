@@ -1,83 +1,74 @@
 import java.io.BufferedReader;
 import java.io.FileInputStream;
+
 import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
+import java.util.*;
 
 public class Main {
-	static final int MX = 20020;
-	static ArrayList<Integer[]> vec[] = new ArrayList[MX];
-	static int dist[] = new int[MX];
-	static boolean ch[] = new boolean[MX];
+    static final int MAX_VERTEX = 20000;
 
-	public static void main(String[] args) throws Exception {
-	
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int V, E, K;
+    static int dist[] = new int[MAX_VERTEX + 1];
+    static List<int[]> edges[] = new List[MAX_VERTEX + 1];
 
-		for (int i = 0; i < MX; i++) {
-			vec[i] = new ArrayList<>();
-		}
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		int V = Integer.parseInt(st.nextToken());
-		int E = Integer.parseInt(st.nextToken());
+    static void getDist(int st) {
+        PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+        boolean ch[] = new boolean[MAX_VERTEX + 1];
+        for (int i = 1; i <= V; i++) {
+            dist[i] = Integer.MAX_VALUE;
+        }
 
-		int S = Integer.parseInt(br.readLine());
+        pq.add(new int[]{0, st});
+        dist[st] = 0;
 
-		for (int i = 0; i < E; i++) {
-			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken());
-			int v = Integer.parseInt(st.nextToken());
-			int w = Integer.parseInt(st.nextToken());
+        while (!pq.isEmpty()) {
+            int cur[] = pq.poll();
 
-			vec[u].add(new Integer[] { v, w });
-//			vec[v].add(new Integer[] { u, w });
-		}
+            if (ch[cur[1]]) {
+                continue;
+            }
+            ch[cur[1]] = true;
+            for (int[] nxt : edges[cur[1]]) {
+                int nd = nxt[0] + cur[0];
 
-		getDist(S);
+                if (nd <= dist[nxt[1]]) {
+                    dist[nxt[1]] = nd;
+                    pq.add(new int[]{nd, nxt[1]});
+                }
+            }
+        }
+    }
 
-		StringBuilder sb = new StringBuilder();
-		for (int i = 1; i <= V; i++) {
-			if (dist[i] == Integer.MAX_VALUE) {
-				sb.append("INF").append("\n");
-			} else {
-				sb.append(dist[i]).append("\n");
-			}
-		}
-		System.out.println(sb);
-	}
+    public static void main(String[] args) throws Exception {
+        // System.setIn(new FileInputStream("src/input.txt"));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        V = Integer.parseInt(st.nextToken());
+        E = Integer.parseInt(st.nextToken());
+        K = Integer.parseInt(br.readLine());
 
-	static void getDist(int st) {
-		PriorityQueue<Integer[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+        for (int i = 1; i <= V; i++) {
+            edges[i] = new LinkedList<>();
+        }
 
-		for (int i = 0; i < MX; i++) {
-			dist[i] = Integer.MAX_VALUE;
-		}
+        for (int i = 0; i < E; i++) {
+            st = new StringTokenizer(br.readLine());
+            int u = Integer.parseInt(st.nextToken());
+            int v = Integer.parseInt(st.nextToken());
+            int w = Integer.parseInt(st.nextToken());
+            edges[u].add(new int[]{w, v});
+        }
 
-		dist[st] = 0;
-		pq.add(new Integer[] { 0, st });
-
-		while (!pq.isEmpty()) {
-			int sz = pq.size();
-			while (sz-- > 0) {
-				Integer[] pk = pq.poll();
-
-				int cur = pk[1];
-				int d = pk[0];
-//				System.out.println(cur + " " + d);
-				if (ch[cur])
-					continue;
-				ch[cur] = true;
-
-				for (Integer[] ni : vec[cur]) {
-					int nxt = ni[0];
-					int nd = d + ni[1];
-					if (nd < dist[nxt]) {
-						dist[nxt] = nd;
-						pq.add(new Integer[] { nd, nxt });
-					}
-				}
-			}
-		}
-	}
+        getDist(K);
+        StringBuilder sb = new StringBuilder();
+        for (int i = 1; i <= V; i++) {
+            if (dist[i] == Integer.MAX_VALUE) {
+                sb.append("INF");
+            } else {
+                sb.append(dist[i]);
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb);
+    }
 }
