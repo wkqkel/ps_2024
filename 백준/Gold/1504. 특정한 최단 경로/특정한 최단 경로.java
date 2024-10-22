@@ -3,7 +3,6 @@ import java.util.*;
 
 public class Main {
 	static final int MX = 1000;
-	static final int INF = Integer.MAX_VALUE;
 
 	static int N, M, X;
 	static List<int[]>[] edges = new List[MX + 1];
@@ -16,7 +15,7 @@ public class Main {
 		PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
 
 		for (int i = 1; i <= N; i++) {
-			dist[i] = INF;
+			dist[i] = Integer.MAX_VALUE;
 			ch[i] = false;
 		}
 
@@ -67,25 +66,24 @@ public class Main {
 		int a = Integer.parseInt(st.nextToken());
 		int b = Integer.parseInt(st.nextToken());
 
+		long d1 = 0; // 1 -> a -> b -> N
+		long d2 = 0; // 1 -> b -> a -> N
 		getDist(a);
-		int dist1 = dist[1];
-		int dist2 = dist[b];
-		int dist3 = dist[N];
+
+		d1 += dist[1]; // d1 += dist[1] + dist[b] 는 오버플로우 위험
+        d1 += dist[b];
+		d2 += dist[b];
+        d2 += dist[N];
 
 		getDist(b);
-		int dist4 = dist[1];
-		int dist5 = dist[N];
+		d1 += dist[N];
+		d2 += dist[1];
 
-		// 1 -> a -> b -> N
-		int sum1 = dist1 + dist2 + dist5;
-		// 1 -> b -> a -> N
-		int sum2 = dist4 + dist2 + dist3;
+		long mn = Math.min(d1, d2);
+		if (d1 >= Integer.MAX_VALUE || d2 >= Integer.MAX_VALUE)
+			mn = -1;
 
-		if (dist1 == INF || dist2 == INF || dist3 == INF || dist4 == INF || dist5 == INF) {
-			System.out.println(-1);
-		} else {
-			System.out.println(Math.min(sum1, sum2));
-		}
+		System.out.println(mn);
 
 	}
 }
