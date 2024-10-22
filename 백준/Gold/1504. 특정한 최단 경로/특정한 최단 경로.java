@@ -1,38 +1,67 @@
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.PriorityQueue;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-	static final int MX = 802;
+	static final int MX = 1000;
 	static final int INF = Integer.MAX_VALUE;
-	static ArrayList<Integer[]> vec[] = new ArrayList[MX];
-	static int dist[] = new int[MX];
-	static boolean ch[] = new boolean[MX];
-	static int N, E;
 
-	public static void main(String[] args) throws Exception {
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static int N, M, X;
+	static List<int[]>[] edges = new List[MX + 1];
 
-		for (int i = 0; i < MX; i++) {
-			vec[i] = new ArrayList<>();
+	static int[] dist = new int[MX + 1];
+
+	static boolean[] ch = new boolean[MX + 1];
+
+	public static void getDist(int st) {
+		PriorityQueue<int[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
+
+		for (int i = 1; i <= N; i++) {
+			dist[i] = INF;
+			ch[i] = false;
 		}
 
+		pq.add(new int[] { 0, st });
+		dist[st] = 0;
+
+		while (!pq.isEmpty()) {
+			int cur = pq.peek()[1];
+			int d = pq.peek()[0];
+			pq.poll();
+
+			if (ch[cur])
+				continue;
+			ch[cur] = true;
+
+			for (int[] edge : edges[cur]) {
+				int nxt = edge[1];
+				int nd = edge[0] + d;
+				if (nd < dist[nxt]) {
+					dist[nxt] = nd;
+					pq.add(new int[] { nd, nxt });
+				}
+			}
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		// System.setIn(new FileInputStream("src/input.txt"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 		StringTokenizer st = new StringTokenizer(br.readLine());
 		N = Integer.parseInt(st.nextToken());
-		E = Integer.parseInt(st.nextToken());
+		M = Integer.parseInt(st.nextToken());
 
-		for (int i = 0; i < E; i++) {
+		for (int i = 1; i <= N; i++) {
+			edges[i] = new LinkedList<>();
+
+		}
+
+		for (int i = 0; i < M; i++) {
 			st = new StringTokenizer(br.readLine());
-			int u = Integer.parseInt(st.nextToken());
-			int v = Integer.parseInt(st.nextToken());
-			int w = Integer.parseInt(st.nextToken());
-
-			vec[u].add(new Integer[] { v, w });
-			vec[v].add(new Integer[] { u, w });
+			int a = Integer.parseInt(st.nextToken());
+			int b = Integer.parseInt(st.nextToken());
+			int c = Integer.parseInt(st.nextToken());
+			edges[a].add(new int[] { c, b });
+			edges[b].add(new int[] { c, a });
 		}
 		st = new StringTokenizer(br.readLine());
 		int a = Integer.parseInt(st.nextToken());
@@ -58,38 +87,5 @@ public class Main {
 			System.out.println(Math.min(sum1, sum2));
 		}
 
-	}
-
-	static void getDist(int st) {
-		PriorityQueue<Integer[]> pq = new PriorityQueue<>((o1, o2) -> o1[0] - o2[0]);
-
-		ch = new boolean[MX];
-		Arrays.fill(dist, INF);
-
-		dist[st] = 0;
-		pq.add(new Integer[] { 0, st });
-
-		while (!pq.isEmpty()) {
-			int sz = pq.size();
-			while (sz-- > 0) {
-				Integer[] pk = pq.poll();
-
-				int cur = pk[1];
-				int d = pk[0];
-
-				if (ch[cur])
-					continue;
-				ch[cur] = true;
-
-				for (Integer[] ni : vec[cur]) {
-					int nxt = ni[0];
-					int nd = d + ni[1];
-					if (nd < dist[nxt]) {
-						dist[nxt] = nd;
-						pq.add(new Integer[] { nd, nxt });
-					}
-				}
-			}
-		}
 	}
 }
