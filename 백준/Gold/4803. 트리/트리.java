@@ -19,15 +19,11 @@ public class Main {
 	}
 
 	static void union(int a, int b) {
-		
+
 		a = find(a);
 		b = find(b);
-		if(a == 0 || b == 0) {
-		    par[a] = par[b] = 0;
-			return;
-		}
-		if (a == b) {
-			par[b] = 0;
+		if (a == 0 || b == 0 || a == b) {
+			par[a] = par[b] = 0;
 			return;
 		}
 
