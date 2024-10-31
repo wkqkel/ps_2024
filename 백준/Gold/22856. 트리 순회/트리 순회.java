@@ -8,8 +8,7 @@ public class Main {
 	static boolean ch[] = new boolean[MX];
 	static int par[] = new int[MX];
 	static int ret = 0;
-	static int last;
-	static boolean end = false;
+    static int last;
 
 	public static void main(String[] args) throws Exception {
 		// System.setIn(new FileInputStream("src/input.txt"));
@@ -35,7 +34,6 @@ public class Main {
 		inorder(1);
 //		System.out.println("last: " + last);
 		dfs(1);
-
 	}
 
 	static void inorder(int cur) {
@@ -63,7 +61,6 @@ public class Main {
 			ret++;
 			dfs(right);
 		} else if (cur == last) {
-//			System.out.println();
 			System.out.println(ret);
 			System.exit(0);
 		} else {
